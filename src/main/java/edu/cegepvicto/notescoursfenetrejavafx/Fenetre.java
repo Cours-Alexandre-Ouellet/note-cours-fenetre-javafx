@@ -113,16 +113,17 @@ public abstract class Fenetre {
             Constructor<? extends Fenetre> constructeur = controleur.getConstructor(Stage.class, DonneesSysteme.class);
             Fenetre fenetre = constructeur.newInstance(stageUtilise, contexte);
             return fenetre;
-        } catch (InvocationTargetException exceptionFichierInnexistant) {
-            if(exceptionFichierInnexistant.getCause() instanceof IOException) {
-
+        } catch (InvocationTargetException exceptionControleur) {
+            if(exceptionControleur.getCause() instanceof IOException exceptionFichier) {
+                System.err.println("Nom de fichier incorrect pour le chargement de la vue.\n" + exceptionFichier.getMessage());
             } else {
-
+                System.err.println("Exception lors de l'exécution du contrôleur.\n" + exceptionControleur.getMessage());
             }
         } catch (NoSuchMethodException | SecurityException exceptionControleur) {
-
+            System.err.println("Le controleur ne contient pas de constructeur qui accepte les paramètres de type 'Stage'" +
+                    "et 'DonneesSsyteme'.\n" + exceptionControleur.getMessage());
         } catch (InstantiationException | IllegalArgumentException | IllegalAccessException exceptionCreation) {
-
+            System.err.println("Impossible d'instancier le contrôleur demandé.\n" + exceptionCreation.getMessage());
         }
 
         return null;
