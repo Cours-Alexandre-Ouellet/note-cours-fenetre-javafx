@@ -22,7 +22,6 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-  mainModule = 'edu.cegepvicto.notescoursfenetrejavafx'
   mainClass = 'edu.cegepvicto.notescoursfenetrejavafx.DemoFenetreApplication'
 }
 

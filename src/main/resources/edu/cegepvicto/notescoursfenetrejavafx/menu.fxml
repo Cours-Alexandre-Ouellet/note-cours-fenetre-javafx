@@ -12,16 +12,22 @@
   </padding>
 
   <Label>Entrez une donnée à passer entre les fenêtres</Label>
-  <TextField fx:id="donnee" />
+  <TextField fx:id="saisieDonnees" />
 
   <Label>Ouverture de fenêtre</Label>
   <Button text="Nouvelle fenêtre" onAction="#nouvelleFenetre"/>
-  <Button text="Nouvelle fenêtre (sur le dessus)" onAction="#nouvelleFenetreDessus"/>
   <Button text="Changer le contenu de cette fenêtre" onAction="#changerContenu"/>
 
   <Label>Boîtes de dialogue</Label>
 
+  <Button onAction="#fenetreConfirmation">Confirmer</Button>
+  <Label fx:id="texteConfirmation">En attente...</Label>
+
+  <Button onAction="#choisirFichier">Choisir un fichier</Button>
+  <Label fx:id="nomFichier">Fichier choisi</Label>
 
   <Label>Autre fenêtre inclue</Label>
+
+  <fx:include source="sousFenetre.fxml"/>
 
 </VBox>

@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 
 /**
  * Assure la gestion d'un fenêtre en permettant de l'ouvrir, de la fermer
@@ -60,24 +61,13 @@ public abstract class Fenetre {
      */
     protected abstract boolean estMaximisee();
 
-    /**
-     * Crée une nouvelle fenêtre qui s'affiche dans un nouveau Stage.
-     * @param contexte Le conteneur de données du système.
-     */
-    public Fenetre(DonneesSysteme contexte) throws IOException {
-        this(null, contexte);
-    }
 
     /**
      * Crée une nouvelle fenêtre qui s'affiche dans un Stage déjà existant.
      * @param stage le Stage à utiliser.
      * @param contexte Le conteneur de données du système.
      */
-    public Fenetre(Stage stage, DonneesSysteme contexte) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getNomFichierVue() + ".fxml"));
-        fxmlLoader.setController(this);
-        Scene scene = new Scene(fxmlLoader.load(), getLargeur(), getHauteur());
-
+    public Fenetre(Stage stage, DonneesSysteme contexte) throws IOException{
         if(stage == null) {
             stage = new Stage();
         }
@@ -86,6 +76,12 @@ public abstract class Fenetre {
         stageUtilise = stage;
         this.contexte = contexte;
 
+        // Création de la vue
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getNomFichierVue() + ".fxml"));
+        fxmlLoader.setController(this);
+        Scene scene = new Scene(fxmlLoader.load(), getLargeur(), getHauteur());
+
+        // Paramètres du stage
         stage.setMaximized(estMaximisee());
         stage.setTitle(getNomFenetre());
         stage.setScene(scene);
@@ -108,6 +104,13 @@ public abstract class Fenetre {
         return chargerFenetre(controleur, stageUtilise);
     }
 
+    /**
+     * Charge une fenêtre et l'affiche. Si la fenêtre ne peut être chargée, alors un message d'erreur
+     * est enregistré et la fenêtre retournée est nulle.
+     * @param controleur le contrôleur de la fenêtre à charger.
+     * @param stageUtilise le stage utilisé pour rendre la scene associé au contrôleur
+     * @return l'instance du contrôleur créé.
+     */
     private Fenetre chargerFenetre(Class<? extends Fenetre> controleur, Stage stageUtilise) {
         try {
             Constructor<? extends Fenetre> constructeur = controleur.getConstructor(Stage.class, DonneesSysteme.class);
@@ -115,13 +118,14 @@ public abstract class Fenetre {
             return fenetre;
         } catch (InvocationTargetException exceptionControleur) {
             if(exceptionControleur.getCause() instanceof IOException exceptionFichier) {
-                System.err.println("Nom de fichier incorrect pour le chargement de la vue.\n" + exceptionFichier.getMessage());
+                System.err.println("Impossible de charger le fichier de vue. \n" + exceptionFichier.getMessage());
             } else {
-                System.err.println("Exception lors de l'exécution du contrôleur.\n" + exceptionControleur.getMessage());
+                System.err.println("Exception lors de l'exécution du contrôleur. Cause possible : mauvais nom de la vue." +
+                        "\n" + exceptionControleur.getMessage());
             }
         } catch (NoSuchMethodException | SecurityException exceptionControleur) {
             System.err.println("Le controleur ne contient pas de constructeur qui accepte les paramètres de type 'Stage'" +
-                    "et 'DonneesSsyteme'.\n" + exceptionControleur.getMessage());
+                    "et 'DonneesSysteme'.\n" + exceptionControleur.getMessage());
         } catch (InstantiationException | IllegalArgumentException | IllegalAccessException exceptionCreation) {
             System.err.println("Impossible d'instancier le contrôleur demandé.\n" + exceptionCreation.getMessage());
         }
